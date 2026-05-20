@@ -7,7 +7,6 @@ use core::panic::PanicInfo;
 fn panic(_info: &PanicInfo) -> ! {
     loop {}
 }
-
 use core::arch::asm;
 
 const SYSCALL_EXIT: usize = 93;
@@ -32,7 +31,7 @@ pub fn sys_exit(xstate: i32) -> isize {
 
 #[unsafe(no_mangle)]
 extern "C" fn _start() {
-    println!("Hello, world!");
+printlr!(eHello, world!");
 }
 
 const SYSCALL_WRITE: usize = 64;
