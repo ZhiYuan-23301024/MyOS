@@ -1,6 +1,5 @@
 #![no_std]
 #![no_main]
-#![feature(panic_info_message)]
 #[macro_use]
 
 mod console;
@@ -11,7 +10,7 @@ use core::arch::global_asm;
 
 global_asm!(include_str!("entry.asm"));
 fn clear_bss() {
-    extern "C" {
+    unsafe extern "C" {
         fn sbss();
         fn ebss();
     }
@@ -20,7 +19,7 @@ fn clear_bss() {
 
 #[unsafe(no_mangle)]
 pub fn rust_main() -> ! {
-    extern "C" {
+    unsafe extern "C" {
         fn stext();
         fn etext();
         fn srodata();
@@ -45,4 +44,3 @@ pub fn rust_main() -> ! {
     println!("Hello, world!");
     panic!("Shutdown machine!");
 }
-
