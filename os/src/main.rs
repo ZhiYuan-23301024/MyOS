@@ -29,7 +29,7 @@ pub fn sys_exit(xstate: i32) -> isize {
     syscall(SYSCALL_EXIT, [xstate as usize, 0, 0])
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 extern "C" fn _start() {
     sys_exit(9);
 }
