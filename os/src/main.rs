@@ -14,7 +14,8 @@ fn clear_bss() {
         fn sbss();
         fn ebss();
     }
-    (sbss as usize..ebss as usize).for_each(|a| unsafe { (a as *mut u8).write_volatile(0) });
+    (sbss as *const () as usize..ebss as *const () as usize)
+        .for_each(|a| unsafe { (a as *mut u8).write_volatile(0) });
 }
 
 #[unsafe(no_mangle)]
@@ -33,14 +34,31 @@ pub fn rust_main() -> ! {
     }
     clear_bss();
     println!("Hello, world!");
-    println!(".text [{:#x}, {:#x})", stext as usize, etext as usize);
-    println!(".rodata [{:#x}, {:#x})", srodata as usize, erodata as usize);
-    println!(".data [{:#x}, {:#x})", sdata as usize, edata as usize);
+    println!(
+        ".text [{:#x}, {:#x})",
+        stext as *const () as usize,
+        etext as *const () as usize
+    );
+    println!(
+        ".rodata [{:#x}, {:#x})",
+        srodata as *const () as usize,
+        erodata as *const () as usize
+    );
+    println!(
+        ".data [{:#x}, {:#x})",
+        sdata as *const () as usize,
+        edata as *const () as usize
+    );
     println!(
         "boot_stack [{:#x}, {:#x})",
-        boot_stack as usize, boot_stack_top as usize
+        boot_stack as *const () as usize,
+        boot_stack_top as *const () as usize
     );
-    println!(".bss [{:#x}, {:#x})", sbss as usize, ebss as usize);
+    println!(
+        ".bss [{:#x}, {:#x})",
+        sbss as *const () as usize,
+        ebss as *const () as usize
+    );
     println!("Hello, world!");
     panic!("Shutdown machine!");
 }
