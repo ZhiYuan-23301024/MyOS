@@ -22,7 +22,7 @@ mod lang_items;
 /// 将该范围内的内存全部写入 0，避免未初始化的静态变量
 /// 包含随机值。
 fn clear_bss() {
-    extern "C" {
+    unsafe extern "C" {
         fn start_bss();
         fn end_bss();
     }
@@ -36,8 +36,8 @@ fn clear_bss() {
 /// 被放置在 `.text.entry` 段内，确保是最先执行的代码。
 /// 首先清零 BSS 段，然后调用用户提供的 `main` 函数，
 /// 最后通过 `exit` 系统调用结束进程。
-#[no_mangle]
-#[link_section = ".text.entry"]
+#[unsafe(no_mangle)]
+#[unsafe(link_section = ".text.entry")]
 pub extern "C" fn _start() -> ! {
     clear_bss();
     exit(main());
@@ -50,7 +50,7 @@ pub extern "C" fn _start() -> ! {
 /// 自己的 Rust 源文件中覆盖该函数。如果用户没有提供
 /// 自己的 `main`，该默认实现会触发 panic，提示缺少 main。
 #[linkage = "weak"]
-#[no_mangle]
+#[unsafe(no_mangle)]
 fn main() -> i32 {
     panic!("Cannot find main!");
 }
