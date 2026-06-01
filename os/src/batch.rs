@@ -33,19 +33,27 @@ impl AppManagerInner {
 
         println!("[kernel] Loading app_{}", app_id);
         // clear icache
-        asm!("fence.i");
+        unsafe {
+            asm!("fence.i");
+        }
         // clear app area
         (APP_BASE_ADDRESS..APP_BASE_ADDRESS + APP_SIZE_LIMIT).for_each(|addr| {
-            (addr as *mut u8).write_volatile(0);
+            unsafe {
+                (addr as *mut u8).write_volatile(0);
+            }
         });
-        let app_src = core::slice::from_raw_parts(
+        let app_src = unsafe {
+            core::slice::from_raw_parts(
             self.app_start[app_id] as *const u8,
             self.app_start[app_id + 1] - self.app_start[app_id]
-        );
-        let app_dst = core::slice::from_raw_parts_mut(
+            );
+        }
+        let app_dst = unsafe {
+            core::slice::from_raw_parts_mut(
             APP_BASE_ADDRESS as *mut u8,
             app_src.len()
-        );
+            );
+        }
         app_dst.copy_from_slice(app_src);
     }
 
@@ -59,7 +67,7 @@ impl AppManagerInner {
 lazy_static! {
     static ref APP_MANAGER: AppManager = AppManager {
         inner: RefCell::new({
-            extern "C" { fn _num_app(); }
+            unsafe sextern "C" { fn _num_app(); }
             let num_app_ptr = _num_app as *const () as *const usize;
             let num_app = unsafe { num_app_ptr.read_volatile() };
             let mut app_start: [usize; MAX_APP_NUM + 1] = [0; MAX_APP_NUM + 1];
@@ -91,7 +99,7 @@ pub fn run_next_app() -> ! {
     }
 
     APP_MANAGER.inner.borrow_mut().move_to_next_app();
-    extern "C" { fn __restore(cx_addr: usize); }
+    unsafe extern "C" { fn __restore(cx_addr: usize); }
     unsafe {
         __restore(KERNEL_STACK.push_context(
             TrapContext::app_init_context(APP_BASE_ADDRESS, USER_STACK.get_sp())
