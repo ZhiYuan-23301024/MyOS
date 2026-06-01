@@ -6,7 +6,7 @@ const SIZE: usize = 10;
 const P: u32 = 3;
 const STEP: usize = 100000;
 const MOD: u32 = 10007;
-#[no_mangle]
+#[unsafe(no_mangle)]
 fn main() -> i32 {
     let mut pow = [0u32; SIZE];
     let mut index: usize = 0;
