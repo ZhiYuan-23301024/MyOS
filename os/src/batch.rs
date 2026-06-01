@@ -47,13 +47,13 @@ impl AppManagerInner {
             self.app_start[app_id] as *const u8,
             self.app_start[app_id + 1] - self.app_start[app_id]
             );
-        };
+        }
         let app_dst = unsafe {
             core::slice::from_raw_parts_mut(
             APP_BASE_ADDRESS as *mut u8,
             app_src.len()
             );
-        };
+        }
         app_dst.copy_from_slice(app_src);
     }
 
@@ -67,7 +67,7 @@ impl AppManagerInner {
 lazy_static! {
     static ref APP_MANAGER: AppManager = AppManager {
         inner: RefCell::new({
-            unsafe { extern "C" { fn _num_app(); } };
+            unsafe extern "C" { fn _num_app(); }
             let num_app_ptr = _num_app as *const () as *const usize;
             let num_app = unsafe { num_app_ptr.read_volatile() };
             let mut app_start: [usize; MAX_APP_NUM + 1] = [0; MAX_APP_NUM + 1];
