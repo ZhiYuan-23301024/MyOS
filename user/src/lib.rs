@@ -8,6 +8,7 @@
 
 #![no_std]
 
+// 启用弱链接特性，允许定义可被外部覆盖的 main 函数
 #![feature(linkage)]
 
 #[macro_use]
@@ -15,6 +16,11 @@ pub mod console;
 mod syscall;
 mod lang_items;
 
+/// 清零 BSS 段
+///
+/// 读取链接脚本提供的 `start_bss` 和 `end_bss` 符号，
+/// 将该范围内的内存全部写入 0，避免未初始化的静态变量
+/// 包含随机值。
 fn clear_bss() {
     extern "C" {
         fn start_bss();
@@ -25,6 +31,11 @@ fn clear_bss() {
     (start_bss_ptr..end_bss_ptr).for_each(|a| unsafe { (a as *mut u8).write_volatile(0) });
 }
 
+/// 用户程序入口点
+///
+/// 被放置在 `.text.entry` 段内，确保是最先执行的代码。
+/// 首先清零 BSS 段，然后调用用户提供的 `main` 函数，
+/// 最后通过 `exit` 系统调用结束进程。
 #[no_mangle]
 #[link_section = ".text.entry"]
 pub extern "C" fn _start() -> ! {
@@ -33,11 +44,18 @@ pub extern "C" fn _start() -> ! {
     panic!("unreachable after sys_exit!");
 }
 
+/// 默认的 main 函数
+///
+/// 使用弱链接 (`#[linkage = "weak"]`) 定义，允许用户在
+/// 自己的 Rust 源文件中覆盖该函数。如果用户没有提供
+/// 自己的 `main`，该默认实现会触发 panic，提示缺少 main。
 #[linkage = "weak"]
 #[no_mangle]
 fn main() -> i32 {
     panic!("Cannot find main!");
 }
+// 导入 syscall 模块中的所有公开符号，
+// 以便后续定义的 write 和 exit 可以直接调用 sys_write、sys_exit。
 use syscall::*;
 
 /// 向文件描述符写入数据
