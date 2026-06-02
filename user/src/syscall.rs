@@ -9,6 +9,8 @@ use core::arch::asm;
 const SYSCALL_WRITE: usize = 64;
 /// 系统调用号：`exit`，对应 Linux syscall 93
 const SYSCALL_EXIT: usize = 93;
+/// 系统调用号：`yield`，对应 Linux syscall 124
+const SYSCALL_YIELD: usize = 124;
 
 /// 执行一次系统调用
 ///
@@ -72,3 +74,8 @@ pub fn sys_write(fd: usize, buffer: &[u8]) -> isize {
 pub fn sys_exit(exit_code: i32) -> isize {
     syscall(SYSCALL_EXIT, [exit_code as usize, 0, 0])
 }
+
+pub fn sys_yield() -> isize {
+    syscall(SYSCALL_YIELD, [0, 0, 0])
+}
+
