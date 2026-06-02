@@ -84,3 +84,9 @@ pub fn load_apps() {
         dst.copy_from_slice(src);
     }
 }
+pub fn init_app_cx(app_id: usize) -> &'static TaskContext {
+    KERNEL_STACK[app_id].push_context(
+        TrapContext::app_init_context(get_base_i(app_id), USER_STACK[app_id].get_sp()),
+        TaskContext::goto_restore(),
+    )
+}
