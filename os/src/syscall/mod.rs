@@ -5,6 +5,9 @@ const SYSCALL_EXIT: usize = 93;
 
 const SYSCALL_YIELD: usize = 124;
 
+const SYSCALL_GET_TIME: usize = 169;
+SYSCALL_GET_TIME => sys_get_time(),
+
 mod fs;
 mod process;
 
