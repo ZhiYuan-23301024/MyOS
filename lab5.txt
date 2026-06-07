@@ -76,7 +76,7 @@ pub fn sys_get_time() -> isize {
 pub fn get_time() -> isize { sys_get_time() }
 
 （2）实现新的测试应用
-
+>
 分别实现00power_3.rs，01power_5.rs，02power_7.rs以及03sleep.rs四个测试应用程序。
 其中，00power_3.rs代码如下：
 #![no_std]
