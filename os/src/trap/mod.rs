@@ -40,7 +40,7 @@ pub fn enable_timer_interrupt() {
     unsafe { sie::set_stimer(); }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub fn trap_handler(cx: &mut TrapContext) -> &mut TrapContext {
     let scause = scause::read();
     let stval = stval::read();
