@@ -16,6 +16,8 @@ mod batch;
 mod timer;
 mod mm;
 
+#[macro_use]
+extern crate bitflags;
 extern crate alloc;
 
 global_asm!(include_str!("entry.asm"));
