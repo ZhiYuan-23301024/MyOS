@@ -14,6 +14,7 @@ mod config;
 mod task;
 mod batch;
 mod timer;
+mod mm;
 
 extern crate alloc;
 
@@ -32,6 +33,7 @@ fn clear_bss() {
 
 #[unsafe(no_mangle)]
 pub fn rust_main() -> ! {
+    mm::init;
     clear_bss();
     println!("[kernel] Hello, world!");
     trap::enable_timer_interrupt();
