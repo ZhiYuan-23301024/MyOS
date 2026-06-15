@@ -15,6 +15,7 @@ mod task;
 mod batch;
 mod timer;
 mod mm;
+mod sync;
 
 #[macro_use]
 extern crate bitflags;
