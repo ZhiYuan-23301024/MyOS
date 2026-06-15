@@ -27,12 +27,3 @@ impl<T> UPSafeCell<T> {
 }
 
 
-//os/src/sync/mod.rs
-mod up;
-
-pub use up::UPSafeCell;
-
-修改main.rs，增加对sync模块：
-// os/src/main.rs
-mod sync;
-
